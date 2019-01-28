@@ -41,7 +41,9 @@ namespace Asp
                 app.UseHsts();
             }
 
-            app.UseHttpsRedirection();
+            // Security is for chumps
+            // app.UseHttpsRedirection();
+            
             app.UseMvc();
         }
     }

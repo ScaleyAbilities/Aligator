@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Text;
 using Newtonsoft.Json;
@@ -11,9 +12,9 @@ namespace Asp
         private static IConnection rabbitConnection;
         private static IModel rabbitChannel;
 
-        // TODO: Allow this to be set via environmental variable
-        private static string rabbitHost = "localhost";
+        private static string rabbitHost = Environment.GetEnvironmentVariable("RABBIT_HOST") ?? "localhost";
         private static string rabbitCommandQueue = "commands";
+        private static IBasicProperties rabbitProperties;
 
         static RabbitHelper() 
         {
@@ -34,13 +35,17 @@ namespace Asp
                 autoDelete: false,
                 arguments: null
             );
+
+            rabbitProperties = rabbitChannel.CreateBasicProperties();
+            rabbitProperties.Persistent = true;
         }
 
-        public static void PushCommand(JObject properties) {
+        public static void PushCommand(JObject properties)
+        {
             rabbitChannel.BasicPublish(
                 exchange: "",
                 routingKey: rabbitCommandQueue,
-                basicProperties: null,
+                basicProperties: rabbitProperties,
                 body: Encoding.UTF8.GetBytes(properties.ToString(Formatting.None))
             );
         }
