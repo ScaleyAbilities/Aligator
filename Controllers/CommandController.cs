@@ -16,9 +16,12 @@ namespace Asp.Controllers
         [HttpPost]
         public ActionResult<string> Post([FromBody] JObject json)
         {
+            var username = json["usr"].ToString();
+            var instance = (username[1] % Program.Instances) + 1;
+
             try
             {
-                RabbitHelper.PushCommand(json);
+                RabbitHelper.PushCommand(json, instance);
             }
             catch (Exception ex)
             {

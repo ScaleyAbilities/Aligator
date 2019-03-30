@@ -40,11 +40,11 @@ namespace Asp
             rabbitProperties.Persistent = true;
         }
 
-        public static void PushCommand(JObject properties)
+        public static void PushCommand(JObject properties, int instance)
         {
             rabbitChannel.BasicPublish(
                 exchange: "",
-                routingKey: rabbitCommandQueue,
+                routingKey: rabbitCommandQueue + instance.ToString(),
                 basicProperties: rabbitProperties,
                 body: Encoding.UTF8.GetBytes(properties.ToString(Formatting.None))
             );
