@@ -16,6 +16,8 @@ namespace Asp
         private static string rabbitCommandQueue = "commands";
         private static IBasicProperties rabbitProperties;
 
+        private static HashSet<string> declaredQueues = new HashSet<string>();
+
         static RabbitHelper() 
         {
             // Ensure Rabbit Queue is set up
@@ -28,23 +30,29 @@ namespace Asp
             rabbitConnection = factory.CreateConnection();
             rabbitChannel = rabbitConnection.CreateModel();
 
-            rabbitChannel.QueueDeclare(
-                queue: rabbitCommandQueue,
-                durable: true,
-                exclusive: false,
-                autoDelete: false,
-                arguments: null
-            );
-
             rabbitProperties = rabbitChannel.CreateBasicProperties();
             rabbitProperties.Persistent = true;
         }
 
         public static void PushCommand(JObject properties, int instance)
         {
+            var queueKey = rabbitCommandQueue + instance.ToString();
+
+            if (!declaredQueues.Contains(queueKey)) {
+                rabbitChannel.QueueDeclare(
+                    queue: rabbitCommandQueue,
+                    durable: true,
+                    exclusive: false,
+                    autoDelete: false,
+                    arguments: null
+                );
+
+                declaredQueues.Add(queueKey);
+            }
+
             rabbitChannel.BasicPublish(
                 exchange: "",
-                routingKey: rabbitCommandQueue + instance.ToString(),
+                routingKey: queueKey,
                 basicProperties: rabbitProperties,
                 body: Encoding.UTF8.GetBytes(properties.ToString(Formatting.None))
             );
