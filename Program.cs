@@ -12,6 +12,8 @@ namespace Asp
 {
     public class Program
     {
+        internal static int Instances = int.Parse(Environment.GetEnvironmentVariable("INSTANCES") ?? "1");
+
         public static void Main(string[] args)
         {
             CreateWebHostBuilder(args).Build().Run();
