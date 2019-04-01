@@ -36,11 +36,11 @@ namespace Asp
 
         public static void PushCommand(JObject properties, int instance)
         {
-            var queueKey = rabbitCommandQueue + instance.ToString();
+            var queueKey = $"{rabbitCommandQueue}.{instance}";
 
             if (!declaredQueues.Contains(queueKey)) {
                 rabbitChannel.QueueDeclare(
-                    queue: rabbitCommandQueue,
+                    queue: queueKey,
                     durable: true,
                     exclusive: false,
                     autoDelete: false,

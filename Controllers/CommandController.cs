@@ -16,7 +16,11 @@ namespace Asp.Controllers
         [HttpPost]
         public ActionResult<string> Post([FromBody] JObject json)
         {
-            var username = json["usr"].ToString();
+            var username = json["usr"]?.ToString();
+
+            if (string.IsNullOrEmpty(username))
+                return BadRequest("No user specified");
+
             var instance = (username[1] % Program.Instances) + 1;
 
             try
