@@ -44,6 +44,7 @@ namespace Asp
             // Security is for chumps
             // app.UseHttpsRedirection();
             
+            app.UseStaticFiles();
             app.UseMvc();
         }
     }
